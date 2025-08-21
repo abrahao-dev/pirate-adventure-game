@@ -2,7 +2,7 @@
 
 **Desenvolvido por:** Matheus Abrahão
 **Teste:** Kodland Brasil - Tutores Python
-**Data:** Dezembro 2024
+**Data:** Agosto 2025
 **Versão:** 1.0.0
 
 Um jogo de aventura pirata top-down desenvolvido em Python usando Pygame Zero (PgZero). Navegue pela ilha, colete tesouros e evite os piratas rivais!

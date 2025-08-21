@@ -499,7 +499,7 @@ pgzrun.go()
 # 🎮 Aventura Point-and-Click
 
 **Desenvolvido para:** Teste de Tutores - Python & Pygame Zero
-**Data:** Dezembro 2024
+**Data:** Agosto 2025
 **Versão:** 1.0.0
 
 ## 📋 Descrição
