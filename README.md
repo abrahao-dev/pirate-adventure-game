@@ -103,9 +103,14 @@ game-python/
 
 ## 🎵 Assets e Créditos
 
-### Sprites e Sons
-- **Kenney**: Todos os sprites e sons utilizados são de [Kenney](https://kenney.nl/)
+### Sprites e Imagens
+- **Kenney**: Sprites e imagens utilizados são de [Kenney](https://kenney.nl/)
 - **Licença**: Creative Commons Zero (CC0) - Uso livre
+
+### Sons e Música
+- **Som de Moeda**: [Drop Coin Sound Effect](https://pixabay.com/sound-effects/drop-coin-384921/) do Pixabay
+- **Trilha Sonora**: Criada com Google Whisk AI
+- **Licença**: Uso livre para projetos educacionais
 
 ## 👨‍💻 Desenvolvimento
 
@@ -133,7 +138,9 @@ game-python/
 
 Este projeto é de autoria de **Matheus Abrahão**.
 Desenvolvido para o teste de tutores da **Kodland Brasil**.
-Os assets utilizados são de [Kenney](https://kenney.nl/) sob licença CC0.
+- **Sprites e Imagens**: [Kenney](https://kenney.nl/) sob licença CC0
+- **Som de Moeda**: [Pixabay](https://pixabay.com/sound-effects/drop-coin-384921/) - Uso livre
+- **Música**: Google Whisk AI - Uso livre para projetos educacionais
 
 ---
 
