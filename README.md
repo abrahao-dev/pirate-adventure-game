@@ -49,7 +49,7 @@ pgzrun main.py
 ### Funcionalidades
 - **Menu Principal**: Iniciar Aventura, Música Ligada/Desligada, Sons Ligados/Desligados, Sair
 - **Movimento Click-to-Move**: Clique onde quer navegar
-- **Animações**: Pirata e piratas rivais têm animações de idle e walk
+- **Animações**: Pirata e piratas rivais têm animações de idle e walk (sprites do Pixel Frog)
 - **Sistema de Pontuação**: 10 pontos por tesouro coletado
 - **Territórios dos Piratas**: Áreas vermelhas onde os piratas rivais patrulham
 - **Música de Fundo**: Trilha sonora pirata em loop
@@ -104,7 +104,8 @@ game-python/
 ## 🎵 Assets e Créditos
 
 ### Sprites e Imagens
-- **Kenney**: Sprites e imagens utilizados são de [Kenney](https://kenney.nl/)
+- **Pixel Frog**: Sprites de personagens (player e enemy) do [Pirate Bomb Asset Pack](https://pixelfrog-assets.itch.io/pirate-bomb)
+- **Kenney**: Outros sprites e imagens utilizados são de [Kenney](https://kenney.nl/)
 - **Licença**: Creative Commons Zero (CC0) - Uso livre
 
 ### Sons e Música
@@ -138,7 +139,8 @@ game-python/
 
 Este projeto é de autoria de **Matheus Abrahão**.
 Desenvolvido para o teste de tutores da **Kodland Brasil**.
-- **Sprites e Imagens**: [Kenney](https://kenney.nl/) sob licença CC0
+- **Sprites de Personagens**: [Pixel Frog - Pirate Bomb](https://pixelfrog-assets.itch.io/pirate-bomb) sob licença CC0
+- **Outros Sprites e Imagens**: [Kenney](https://kenney.nl/) sob licença CC0
 - **Som de Moeda**: [Pixabay](https://pixabay.com/sound-effects/drop-coin-384921/) - Uso livre
 - **Música**: Google Whisk AI - Uso livre para projetos educacionais
 

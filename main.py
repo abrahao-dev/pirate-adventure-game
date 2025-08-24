@@ -21,6 +21,10 @@ ENEMY_COUNT = 3
 POWERUP_COUNT = 3
 PROJECTILE_COUNT = 5
 
+def load_seq(prefix: str, start: int, end: int):
+    """Helper para gerar sequência de frames de animação"""
+    return [f"{prefix}{i}" for i in range(start, end + 1)]
+
 class Animation:
     """Classe para gerenciar animacoes de sprite"""
     def __init__(self, frames, frame_duration=10):
@@ -51,8 +55,10 @@ class Player:
         self.invincible_timer = 0
         self.powerup_active = False
         self.powerup_timer = 0
-        self.idle_animation = Animation(['player_idle_1', 'player_idle_2'], 15)
-        self.walk_animation = Animation(['player_walk_1', 'player_walk_2'], 8)
+        # Usar os 26 frames de animação idle disponíveis
+        self.idle_animation = Animation([f'player/idle/{i}' for i in range(1, 27)], 15)
+        # Usar os 14 frames de animação de corrida disponíveis
+        self.run_animation = Animation([f'player/run/{i}' for i in range(1, 15)], 12)
         self.current_animation = self.idle_animation
     def move_to(self, target_x, target_y):
         self.target_x = target_x
@@ -80,7 +86,7 @@ class Player:
                 self.x += (dx / distance) * self.speed
                 self.y += (dy / distance) * self.speed
                 self.direction = 1 if dx > 0 else -1
-                self.current_animation = self.walk_animation
+                self.current_animation = self.run_animation
             else:
                 self.x = self.target_x
                 self.y = self.target_y
@@ -106,24 +112,31 @@ class Player:
         return False
 
     def draw(self):
-        # Player com visual melhorado - retangulo com bordas arredondadas simuladas
+        # Piscar quando invencível
         if self.invincible and self.invincible_timer % 10 < 5:
-            # Piscar quando invencivel
             return
 
-        color = (0, 120, 255) if self.current_animation == self.idle_animation else (0, 180, 255)
-        if self.powerup_active:
-            color = (255, 255, 0)  # Dourado quando com powerup
+        # Obter o frame atual da animação
+        current_frame = self.current_animation.get_current_frame()
 
-        # Sombra
-        screen.draw.filled_rect(Rect(self.x - 14, self.y - 12, 30, 30), (0, 0, 0, 100))
-        # Corpo principal
-        screen.draw.filled_rect(Rect(self.x - 15, self.y - 15, 30, 30), color)
-        # Borda
-        screen.draw.rect(Rect(self.x - 15, self.y - 15, 30, 30), (255, 255, 255))
-        # Olhos simples
-        screen.draw.filled_circle((self.x - 5, self.y - 5), 2, "white")
-        screen.draw.filled_circle((self.x + 5, self.y - 5), 2, "white")
+        try:
+            # Criar um Actor com a imagem atual e posicionar
+            player_actor = Actor(current_frame)
+            player_actor.x = self.x
+            player_actor.y = self.y
+
+            # Desenhar o sprite do jogador
+            player_actor.draw()
+        except Exception as e:
+            # Fallback caso as imagens não sejam encontradas
+            print(f"Erro ao carregar sprite: {e}")
+            color = (0, 120, 255) if self.current_animation == self.idle_animation else (0, 180, 255)
+            if self.powerup_active:
+                color = (255, 255, 0)  # Dourado quando com powerup
+
+            # Desenhar retângulo como fallback
+            screen.draw.filled_rect(Rect(self.x - 15, self.y - 15, 30, 30), color)
+            screen.draw.rect(Rect(self.x - 15, self.y - 15, 30, 30), (255, 255, 255))
 
 class Enemy:
     """Classe dos inimigos com movimento de patrulha"""
@@ -134,9 +147,9 @@ class Enemy:
         self.direction = random.uniform(0, 2 * math.pi)
         self.territory = territory
         self.change_direction_timer = 0
-        self.idle_animation = Animation(['enemy_idle_1', 'enemy_idle_2'], 12)
-        self.walk_animation = Animation(['enemy_walk_1', 'enemy_walk_2'], 6)
-        self.current_animation = self.walk_animation
+        # Usar os 12 frames de animação de corrida disponíveis
+        self.run_animation = Animation(load_seq('enemy/run/', 1, 12), 10)
+        self.current_animation = self.run_animation
     def update(self):
         self.x += math.cos(self.direction) * self.speed
         self.y += math.sin(self.direction) * self.speed
@@ -148,19 +161,28 @@ class Enemy:
         if self.change_direction_timer > 120:
             self.direction = random.uniform(0, 2 * math.pi)
             self.change_direction_timer = 0
+
+        # Inimigo está sempre "em movimento" → animação de corrida
+        self.current_animation = self.run_animation
         self.current_animation.update()
     def draw(self):
-        # Inimigos com visual melhorado
-        color = (220, 50, 50) if self.current_animation == self.idle_animation else (180, 30, 30)
-        # Sombra
-        screen.draw.filled_rect(Rect(self.x - 11, self.y - 10, 25, 25), (0, 0, 0, 80))
-        # Corpo principal
-        screen.draw.filled_rect(Rect(self.x - 12, self.y - 12, 25, 25), color)
-        # Borda mais escura
-        screen.draw.rect(Rect(self.x - 12, self.y - 12, 25, 25), (100, 0, 0))
-        # Olhos vermelhos brilhantes
-        screen.draw.filled_circle((self.x - 4, self.y - 4), 1, (255, 100, 100))
-        screen.draw.filled_circle((self.x + 4, self.y - 4), 1, (255, 100, 100))
+        # Obter o frame atual da animação
+        current_frame = self.current_animation.get_current_frame()
+
+        try:
+            # Criar um Actor com a imagem atual e posicionar
+            enemy_actor = Actor(current_frame)
+            enemy_actor.x = self.x
+            enemy_actor.y = self.y
+
+            # Desenhar o sprite do inimigo
+            enemy_actor.draw()
+        except Exception as e:
+            # Fallback caso as imagens não sejam encontradas
+            print(f"Erro ao carregar sprite do inimigo: {e}")
+            # Desenhar retângulo como fallback
+            screen.draw.filled_rect(Rect(self.x - 12, self.y - 12, 25, 25), (180, 30, 30))
+            screen.draw.rect(Rect(self.x - 12, self.y - 12, 25, 25), (100, 0, 0))
 
 class Coin:
     """Classe para as moedas coletaveis"""
@@ -516,34 +538,44 @@ class Game:
         author_text = "por Matheus Abrahao"
         screen.draw.text(author_text, center=(WIDTH//2, 170), fontsize=18, color=(200, 200, 200))
 
-        # Botoes modernos e coloridos
+        # Cores do tema pirata/tropical
+        WOOD_COLOR = (107, 66, 38)      # #6B4226 - Marrom madeira
+        GOLD_COLOR = (255, 215, 0)      # #FFD700 - Dourado
+        TURQUOISE_HOVER = (26, 188, 156) # #1ABC9C - Turquesa suave
+        DARK_WOOD = (75, 46, 28)        # #4B2E1C - Marrom escuro para bordas
+
+        # Botoes com tema pirata/tropical
         button_configs = [
-            ("INICIAR AVENTURA", "start", (255, 100, 100), (255, 150, 150)),
-            ("MUSICA: " + ("LIGADA" if self.music_on else "DESLIGADA"), "music", (100, 200, 255), (150, 220, 255)),
-            ("SONS: " + ("LIGADOS" if self.sfx_on else "DESLIGADOS"), "sfx", (255, 200, 100), (255, 220, 150)),
-            ("SAIR", "exit", (200, 100, 200), (220, 150, 220))
+            ("INICIAR AVENTURA", "start"),
+            ("MUSICA: " + ("LIGADA" if self.music_on else "DESLIGADA"), "music"),
+            ("SONS: " + ("LIGADOS" if self.sfx_on else "DESLIGADOS"), "sfx"),
+            ("SAIR", "exit")
         ]
 
-        for text, key, color, hover_color in button_configs:
+        for text, key in button_configs:
             button = self.buttons[key]
             is_hovered = self.button_hover == key
 
             # Cor do botao baseada no hover
-            current_color = hover_color if is_hovered else color
+            current_color = TURQUOISE_HOVER if is_hovered else WOOD_COLOR
 
-            # Sombra do botao
-            shadow = Rect(button.x + 4, button.y + 4, button.width, button.height)
-            screen.draw.filled_rect(shadow, (0, 0, 0, 120))
+            # Sombra do botao (mais escura para profundidade)
+            shadow = Rect(button.x + 3, button.y + 3, button.width, button.height)
+            screen.draw.filled_rect(shadow, (0, 0, 0, 100))
 
-            # Botao principal com bordas arredondadas simuladas
+            # Botao principal com cor de madeira
             screen.draw.filled_rect(button, current_color)
 
-            # Borda brilhante
-            border_color = (255, 255, 255) if is_hovered else (200, 200, 200)
-            screen.draw.rect(button, border_color)
+            # Borda em marrom escuro (2px simulada)
+            border_rect = Rect(button.x - 2, button.y - 2, button.width + 4, button.height + 4)
+            screen.draw.rect(border_rect, DARK_WOOD)
 
-            # Texto do botao
-            text_color = (255, 255, 255) if is_hovered else (50, 50, 50)
+            # Texto dourado em negrito
+            text_color = GOLD_COLOR
+            # Sombra do texto para melhor legibilidade
+            screen.draw.text(text, center=(button.centerx + 1, button.centery + 1),
+                           fontsize=22, color=(0, 0, 0, 100))
+            # Texto principal dourado
             screen.draw.text(text, center=button.center, fontsize=22, color=text_color)
 
         # Instrucoes na parte inferior
