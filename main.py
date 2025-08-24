@@ -1,5 +1,5 @@
 """
-Treasure Hunt - Pirate Adventure
+Caca ao Tesouro - Pirate Adventure
 Author: Matheus Abrahao
 A top-down pirate adventure game using Pygame Zero
 """
@@ -11,7 +11,7 @@ import pgzrun
 from pygame import Rect
 
 # Game constants
-TITLE = "Caca ao Tesouro - Aventura Pirata"
+TITLE = "Treasure Hunt - Pirate Adventure"
 WIDTH = 800
 HEIGHT = 600
 PLAYER_SPEED = 3
@@ -529,8 +529,8 @@ class Game:
         menu_bg.draw()
 
         # Main title with effects
-        title = "CACA AO TESOURO"
-        subtitle = "Aventura Pirata"
+        title = "TREASURE HUNT"
+        subtitle = "Pirate Adventure"
 
         # Title shadow
         screen.draw.text(title, center=(WIDTH//2 + 3, 82), fontsize=48, color=(0, 0, 0, 150))
@@ -620,19 +620,19 @@ class Game:
         screen.draw.filled_rect(ui_bg, (0, 0, 0, 150))
         screen.draw.rect(ui_bg, "white")
 
-        screen.draw.text(f"Tesouros: {self.score}", (15, 15), fontsize=28, color=(255, 255, 100))
+        screen.draw.text(f"Score: {self.score}", (15, 15), fontsize=28, color=(255, 255, 100))
         collected_coins = sum(1 for coin in self.coins if coin.collected)
         coin_color = (100, 255, 100) if collected_coins == COIN_COUNT else "white"
-        screen.draw.text(f"Moedas: {collected_coins}/{COIN_COUNT}", (15, 45), fontsize=24, color=coin_color)
+        screen.draw.text(f"Coins: {collected_coins}/{COIN_COUNT}", (15, 45), fontsize=24, color=coin_color)
 
         # Show lives
-        lives_text = f"Vidas: {self.player.lives}/3"
+        lives_text = f"Lives: {self.player.lives}/3"
         lives_color = (255, 100, 100) if self.player.lives <= 1 else (255, 255, 255)
         screen.draw.text(lives_text, (15, 65), fontsize=20, color=lives_color)
 
         # Show active powerup
         if self.player.powerup_active:
-            powerup_text = f"VELOCIDADE! ({self.player.powerup_timer // 60}s)"
+            powerup_text = f"SPEED! ({self.player.powerup_timer // 60}s)"
             screen.draw.text(powerup_text, center=(WIDTH//2, 30), fontsize=20, color=(255, 255, 0))
 
         # Instructions in bottom corner
@@ -650,18 +650,18 @@ class Game:
 
         if is_victory:
             # Victory
-            screen.draw.text("TESOURO ENCONTRADO!", center=(WIDTH//2 + 3, HEIGHT//2 - 47), fontsize=50, color=(0, 0, 0, 100))
-            screen.draw.text("TESOURO ENCONTRADO!", center=(WIDTH//2, HEIGHT//2 - 50), fontsize=50, color=(255, 255, 100))
-            screen.draw.text("Voce encontrou todos os tesouros!", center=(WIDTH//2, HEIGHT//2 - 10), fontsize=25, color=(100, 255, 100))
+            screen.draw.text("TREASURE FOUND!", center=(WIDTH//2 + 3, HEIGHT//2 - 47), fontsize=50, color=(0, 0, 0, 100))
+            screen.draw.text("TREASURE FOUND!", center=(WIDTH//2, HEIGHT//2 - 50), fontsize=50, color=(255, 255, 100))
+            screen.draw.text("You found all treasures!", center=(WIDTH//2, HEIGHT//2 - 10), fontsize=25, color=(100, 255, 100))
         else:
             # Defeat
-            screen.draw.text("PIRATAS TE PEGARAM!", center=(WIDTH//2 + 3, HEIGHT//2 - 47), fontsize=50, color=(0, 0, 0, 100))
-            screen.draw.text("PIRATAS TE PEGARAM!", center=(WIDTH//2, HEIGHT//2 - 50), fontsize=50, color=(255, 100, 100))
-            screen.draw.text("Os piratas rivais te capturaram!", center=(WIDTH//2, HEIGHT//2 - 10), fontsize=22, color=(255, 150, 150))
+            screen.draw.text("PIRATES CAUGHT YOU!", center=(WIDTH//2 + 3, HEIGHT//2 - 47), fontsize=50, color=(0, 0, 0, 100))
+            screen.draw.text("PIRATES CAUGHT YOU!", center=(WIDTH//2, HEIGHT//2 - 50), fontsize=50, color=(255, 100, 100))
+            screen.draw.text("The rival pirates captured you!", center=(WIDTH//2, HEIGHT//2 - 10), fontsize=22, color=(255, 150, 150))
 
         # Score with highlight
-        screen.draw.text(f"Tesouros Encontrados: {self.score}", center=(WIDTH//2, HEIGHT//2 + 30), fontsize=30, color=(255, 255, 255))
-        screen.draw.text(f"Moedas Coletadas: {collected_coins}/{COIN_COUNT}", center=(WIDTH//2, HEIGHT//2 + 60), fontsize=24, color=(255, 215, 0))
+        screen.draw.text(f"Treasures Found: {self.score}", center=(WIDTH//2, HEIGHT//2 + 30), fontsize=30, color=(255, 255, 255))
+        screen.draw.text(f"Coins Collected: {collected_coins}/{COIN_COUNT}", center=(WIDTH//2, HEIGHT//2 + 60), fontsize=24, color=(255, 215, 0))
 
         # Return button
         button_rect = Rect(WIDTH//2 - 100, HEIGHT//2 + 100, 200, 40)
