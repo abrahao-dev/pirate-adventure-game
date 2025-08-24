@@ -1,5 +1,5 @@
 """
-Caca ao Tesouro - Pirate Adventure
+Treasure Hunt - Pirate Adventure
 Author: Matheus Abrahao
 A top-down pirate adventure game using Pygame Zero
 """
@@ -553,10 +553,10 @@ class Game:
 
         # Buttons with pirate/tropical theme
         button_configs = [
-            ("INICIAR AVENTURA", "start"),
-            ("MUSICA: " + ("LIGADA" if self.music_on else "DESLIGADA"), "music"),
-            ("SONS: " + ("LIGADOS" if self.sfx_on else "DESLIGADOS"), "sfx"),
-            ("SAIR", "exit")
+            ("START ADVENTURE", "start"),
+            ("MUSIC: " + ("ON" if self.music_on else "OFF"), "music"),
+            ("SOUND: " + ("ON" if self.sfx_on else "OFF"), "sfx"),
+            ("EXIT", "exit")
         ]
 
         for text, key in button_configs:
@@ -586,7 +586,7 @@ class Game:
             screen.draw.text(text, center=button.center, fontsize=22, color=text_color)
 
         # Instructions at bottom
-        instructions = "MOUSE: Clique nos botoes - OBJETIVO: Colete 10 moedas - EVITE: Piratas e projeteis!"
+        instructions = "MOUSE: Click buttons - OBJECTIVE: Collect 10 coins - AVOID: Pirates and projectiles!"
         screen.draw.text(instructions, center=(WIDTH//2, HEIGHT - 30), fontsize=16, color=(255, 255, 255))
 
     def draw_game(self):
@@ -596,7 +596,7 @@ class Game:
             screen.draw.rect(enemy.territory, (180, 50, 50, 30))
             screen.draw.rect(enemy.territory, (100, 0, 0))
             # Danger warning
-            screen.draw.text("PIRATAS RIVAIS", center=(enemy.territory.centerx, enemy.territory.top - 15),
+            screen.draw.text("RIVAL PIRATES", center=(enemy.territory.centerx, enemy.territory.top - 15),
                            fontsize=20, color=(255, 50, 50))
 
         # Draw elements in depth order
@@ -636,7 +636,7 @@ class Game:
             screen.draw.text(powerup_text, center=(WIDTH//2, 30), fontsize=20, color=(255, 255, 0))
 
         # Instructions in bottom corner
-        instructions = "MOUSE: Clique para mover - OBJETIVO: Colete todas as 10 moedas - EVITE: Piratas e projeteis!"
+        instructions = "MOUSE: Click to move - OBJECTIVE: Collect all 10 coins - AVOID: Pirates and projectiles!"
         screen.draw.text(instructions, center=(WIDTH//2, HEIGHT - 20), fontsize=16, color=(200, 200, 200))
 
     def draw_game_over(self):
@@ -667,7 +667,7 @@ class Game:
         button_rect = Rect(WIDTH//2 - 100, HEIGHT//2 + 100, 200, 40)
         screen.draw.filled_rect(button_rect, (100, 150, 255))
         screen.draw.rect(button_rect, "white")
-        screen.draw.text("Clique para voltar ao porto", center=button_rect.center, fontsize=20, color="white")
+        screen.draw.text("Click to return to port", center=button_rect.center, fontsize=20, color="white")
 
     def handle_click(self, pos):
         if self.countdown_active:
