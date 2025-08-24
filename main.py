@@ -1,7 +1,7 @@
 """
-Caca ao Tesouro - Aventura Pirata
-Autor: Matheus Abrahao
-Um jogo de aventura pirata top-down usando Pygame Zero
+Treasure Hunt - Pirate Adventure
+Author: Matheus Abrahao
+A top-down pirate adventure game using Pygame Zero
 """
 
 import math
@@ -22,26 +22,28 @@ POWERUP_COUNT = 3
 PROJECTILE_COUNT = 5
 
 def load_seq(prefix: str, start: int, end: int):
-    """Helper para gerar sequência de frames de animação"""
+    """Helper to generate animation frame sequence"""
     return [f"{prefix}{i}" for i in range(start, end + 1)]
 
 class Animation:
-    """Classe para gerenciar animacoes de sprite"""
+    """Class to manage sprite animations"""
     def __init__(self, frames, frame_duration=10):
         self.frames = frames
         self.frame_duration = frame_duration
         self.current_frame = 0
         self.frame_counter = 0
+
     def update(self):
         self.frame_counter += 1
         if self.frame_counter >= self.frame_duration:
             self.frame_counter = 0
             self.current_frame = (self.current_frame + 1) % len(self.frames)
+
     def get_current_frame(self):
         return self.frames[self.current_frame]
 
 class Player:
-    """Classe do jogador com movimento click-to-move"""
+    """Player class with click-to-move movement"""
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -55,23 +57,24 @@ class Player:
         self.invincible_timer = 0
         self.powerup_active = False
         self.powerup_timer = 0
-        # Usar os 26 frames de animação idle disponíveis
+        # Use 26 idle animation frames
         self.idle_animation = Animation([f'player/idle/{i}' for i in range(1, 27)], 15)
-        # Usar os 14 frames de animação de corrida disponíveis
+        # Use 14 run animation frames
         self.run_animation = Animation([f'player/run/{i}' for i in range(1, 15)], 12)
         self.current_animation = self.idle_animation
+
     def move_to(self, target_x, target_y):
         self.target_x = target_x
         self.target_y = target_y
         self.is_moving = True
     def update(self):
-        # Atualizar invencibilidade
+        # Update invincibility
         if self.invincible:
             self.invincible_timer -= 1
             if self.invincible_timer <= 0:
                 self.invincible = False
 
-        # Atualizar powerup
+        # Update powerup
         if self.powerup_active:
             self.powerup_timer -= 1
             if self.powerup_timer <= 0:
@@ -97,49 +100,49 @@ class Player:
         self.current_animation.update()
 
     def activate_powerup(self):
-        """Ativa powerup de velocidade"""
+        """Activate speed powerup"""
         self.powerup_active = True
-        self.powerup_timer = 300  # 5 segundos
+        self.powerup_timer = 300  # 5 seconds
         self.speed = PLAYER_SPEED * 2
 
     def take_damage(self):
-        """Jogador toma dano"""
+        """Player takes damage"""
         if not self.invincible:
             self.lives -= 1
             self.invincible = True
-            self.invincible_timer = 120  # 2 segundos de invencibilidade
+            self.invincible_timer = 120  # 2 seconds of invincibility
             return True
         return False
 
     def draw(self):
-        # Piscar quando invencível
+        # Blink when invincible
         if self.invincible and self.invincible_timer % 10 < 5:
             return
 
-        # Obter o frame atual da animação
+        # Get current animation frame
         current_frame = self.current_animation.get_current_frame()
 
         try:
-            # Criar um Actor com a imagem atual e posicionar
+            # Create Actor with current image and position
             player_actor = Actor(current_frame)
             player_actor.x = self.x
             player_actor.y = self.y
 
-            # Desenhar o sprite do jogador
+            # Draw player sprite
             player_actor.draw()
         except Exception as e:
-            # Fallback caso as imagens não sejam encontradas
-            print(f"Erro ao carregar sprite: {e}")
+            # Fallback if images not found
+            print(f"Error loading sprite: {e}")
             color = (0, 120, 255) if self.current_animation == self.idle_animation else (0, 180, 255)
             if self.powerup_active:
-                color = (255, 255, 0)  # Dourado quando com powerup
+                color = (255, 255, 0)  # Gold when with powerup
 
-            # Desenhar retângulo como fallback
+            # Draw rectangle as fallback
             screen.draw.filled_rect(Rect(self.x - 15, self.y - 15, 30, 30), color)
             screen.draw.rect(Rect(self.x - 15, self.y - 15, 30, 30), (255, 255, 255))
 
 class Enemy:
-    """Classe dos inimigos com movimento de patrulha"""
+    """Enemy class with patrol movement"""
     def __init__(self, x, y, territory):
         self.x = x
         self.y = y
@@ -147,7 +150,7 @@ class Enemy:
         self.direction = random.uniform(0, 2 * math.pi)
         self.territory = territory
         self.change_direction_timer = 0
-        # Usar os 12 frames de animação de corrida disponíveis
+        # Use 12 run animation frames
         self.run_animation = Animation(load_seq('enemy/run/', 1, 12), 10)
         self.current_animation = self.run_animation
     def update(self):
@@ -162,101 +165,105 @@ class Enemy:
             self.direction = random.uniform(0, 2 * math.pi)
             self.change_direction_timer = 0
 
-        # Inimigo está sempre "em movimento" → animação de corrida
+        # Enemy is always "moving" → run animation
         self.current_animation = self.run_animation
         self.current_animation.update()
     def draw(self):
-        # Obter o frame atual da animação
+        # Get current animation frame
         current_frame = self.current_animation.get_current_frame()
 
         try:
-            # Criar um Actor com a imagem atual e posicionar
+            # Create Actor with current image and position
             enemy_actor = Actor(current_frame)
             enemy_actor.x = self.x
             enemy_actor.y = self.y
 
-            # Desenhar o sprite do inimigo
+            # Draw enemy sprite
             enemy_actor.draw()
         except Exception as e:
-            # Fallback caso as imagens não sejam encontradas
-            print(f"Erro ao carregar sprite do inimigo: {e}")
-            # Desenhar retângulo como fallback
+            # Fallback if images not found
+            print(f"Error loading enemy sprite: {e}")
+            # Draw rectangle as fallback
             screen.draw.filled_rect(Rect(self.x - 12, self.y - 12, 25, 25), (180, 30, 30))
             screen.draw.rect(Rect(self.x - 12, self.y - 12, 25, 25), (100, 0, 0))
 
 class Coin:
-    """Classe para as moedas coletaveis"""
+    """Class for collectible coins"""
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.collected = False
         self.animation = Animation(['coin_1', 'coin_2', 'coin_3'], 10)
+
     def update(self):
         if not self.collected:
             self.animation.update()
+
     def draw(self):
         if not self.collected:
-            # Moedas com visual melhorado - efeito brilhante estatico
-            # Sombra
+            # Coins with improved visual - static shine effect
+            # Shadow
             screen.draw.filled_circle((self.x + 1, self.y + 1), 10, (0, 0, 0, 50))
-            # Anel externo dourado escuro
+            # Dark gold outer ring
             screen.draw.filled_circle((self.x, self.y), 10, (200, 150, 0))
-            # Anel interno dourado claro
+            # Light gold inner ring
             screen.draw.filled_circle((self.x, self.y), 8, (255, 215, 0))
-            # Centro brilhante
+            # Bright center
             screen.draw.filled_circle((self.x, self.y), 5, (255, 255, 150))
-            # Borda branca
+            # White border
             screen.draw.circle((self.x, self.y), 10, "white")
 
 class PowerUp:
-    """Classe para powerups de velocidade"""
+    """Class for speed powerups"""
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.collected = False
         self.animation = Animation(['powerup_1', 'powerup_2', 'powerup_3'], 8)
+
     def update(self):
         if not self.collected:
             self.animation.update()
+
     def draw(self):
         if not self.collected:
-            # Powerup com efeito visual especial estatico
-            # Sombra
+            # Powerup with special static visual effect
+            # Shadow
             screen.draw.filled_circle((self.x + 2, self.y + 2), 12, (0, 0, 0, 60))
-            # Anel externo azul
+            # Blue outer ring
             screen.draw.filled_circle((self.x, self.y), 12, (100, 150, 255))
-            # Anel interno azul claro
+            # Light blue inner ring
             screen.draw.filled_circle((self.x, self.y), 10, (150, 200, 255))
-            # Centro brilhante
+            # Bright center
             screen.draw.filled_circle((self.x, self.y), 6, (255, 255, 255))
-            # Borda branca
+            # White border
             screen.draw.circle((self.x, self.y), 12, "white")
-            # Efeito de brilho
+            # Glow effect
             screen.draw.circle((self.x, self.y), 8, (255, 255, 100))
 
 class Projectile:
-    """Classe para projeteis/obstaculos que se movem pelo mapa"""
+    """Class for projectiles/obstacles that move around the map"""
     def __init__(self):
         self.reset()
 
     def reset(self):
-        """Reseta o projetil em uma nova posicao e direcao"""
-        # Escolher borda aleatoria para spawn
+        """Reset projectile to new position and direction"""
+        # Choose random border for spawn
         side = random.randint(0, 3)
-        if side == 0:  # Topo
+        if side == 0:  # Top
             self.x = random.randint(0, WIDTH)
             self.y = -20
-        elif side == 1:  # Direita
+        elif side == 1:  # Right
             self.x = WIDTH + 20
             self.y = random.randint(0, HEIGHT)
-        elif side == 2:  # Baixo
+        elif side == 2:  # Bottom
             self.x = random.randint(0, WIDTH)
             self.y = HEIGHT + 20
-        else:  # Esquerda
+        else:  # Left
             self.x = -20
             self.y = random.randint(0, HEIGHT)
 
-        # Direcao aleatoria
+        # Random direction
         self.direction = random.uniform(0, 2 * math.pi)
         self.speed = random.uniform(2, 4)
         self.active = True
@@ -264,11 +271,11 @@ class Projectile:
 
     def update(self):
         if self.active:
-            # Mover projetil
+            # Move projectile
             self.x += math.cos(self.direction) * self.speed
             self.y += math.sin(self.direction) * self.speed
 
-            # Verificar se saiu da tela
+            # Check if left screen
             if (self.x < -30 or self.x > WIDTH + 30 or
                 self.y < -30 or self.y > HEIGHT + 30):
                 self.reset()
@@ -277,22 +284,22 @@ class Projectile:
 
     def draw(self):
         if self.active:
-            # Projetil com efeito visual
-            # Sombra
+            # Projectile with visual effect
+            # Shadow
             screen.draw.filled_circle((self.x + 1, self.y + 1), 8, (0, 0, 0, 80))
-            # Corpo principal (laranja/vermelho)
+            # Main body (orange/red)
             screen.draw.filled_circle((self.x, self.y), 8, (255, 100, 50))
-            # Centro brilhante
+            # Bright center
             screen.draw.filled_circle((self.x, self.y), 4, (255, 200, 100))
-            # Borda
+            # Border
             screen.draw.circle((self.x, self.y), 8, (255, 50, 0))
-            # Efeito de rastro
+            # Trail effect
             trail_x = self.x - math.cos(self.direction) * 15
             trail_y = self.y - math.sin(self.direction) * 15
             screen.draw.filled_circle((trail_x, trail_y), 4, (255, 100, 50, 100))
 
 class Game:
-    """Classe principal do jogo"""
+    """Main game class"""
     def __init__(self):
         self.state = "menu"
         self.score = 0
@@ -319,21 +326,21 @@ class Game:
 
     def init_game(self):
         self.player = Player(WIDTH // 2, HEIGHT // 2)
-        # Territorios melhor posicionados e maiores para inimigos
+        # Better positioned and larger territories for enemies
         territories = [
-            Rect(80, 80, 180, 120),   # Superior esquerdo
-            Rect(520, 80, 180, 120),  # Superior direito
-            Rect(300, 420, 200, 120)  # Inferior centro
+            Rect(80, 80, 180, 120),   # Upper left
+            Rect(520, 80, 180, 120),  # Upper right
+            Rect(300, 420, 200, 120)  # Lower center
         ]
         self.enemies = []
         for i in range(ENEMY_COUNT):
             territory = territories[i]
-            # Posicionar inimigos no centro de seus territorios
+            # Position enemies at center of their territories
             x = territory.centerx
             y = territory.centery
             self.enemies.append(Enemy(x, y, territory))
         self.coins = []
-        # Melhor distribuicao das moedas evitando territorios dos inimigos
+        # Better coin distribution avoiding enemy territories
         safe_zones = [
             (150, 300), (350, 200), (450, 300), (650, 300),
             (200, 500), (600, 500), (400, 150), (700, 400),
@@ -343,14 +350,14 @@ class Game:
             x, y = safe_zones[i]
             self.coins.append(Coin(x, y))
 
-        # Adicionar powerups
+        # Add powerups
         self.powerups = []
         powerup_positions = [(250, 250), (550, 350), (450, 450)]
         for i in range(min(POWERUP_COUNT, len(powerup_positions))):
             x, y = powerup_positions[i]
             self.powerups.append(PowerUp(x, y))
 
-        # Adicionar projeteis
+        # Add projectiles
         self.projectiles = []
         for i in range(PROJECTILE_COUNT):
             self.projectiles.append(Projectile())
@@ -358,12 +365,12 @@ class Game:
         self.particles = []
         self.score = 0
 
-        # Iniciar musica de fundo
+        # Start background music
         if self.music_on:
             music.play('soundtrack')
 
     def add_particles(self, x, y, color, count=5):
-        """Adiciona efeitos de particulas"""
+        """Add particle effects"""
         for _ in range(count):
             self.particles.append({
                 'x': x,
@@ -375,7 +382,7 @@ class Game:
             })
 
     def start_countdown(self):
-        """Inicia a contagem regressiva para o jogo"""
+        """Start countdown for the game"""
         self.countdown_active = True
         self.countdown_timer = 0
         self.countdown_number = 3
@@ -416,7 +423,7 @@ class Game:
                 if particle['life'] <= 0:
                     self.particles.remove(particle)
 
-            # Verificar colisoes
+            # Check collisions
             for coin in self.coins:
                 if not coin.collected:
                     distance = math.sqrt((self.player.x - coin.x)**2 + (self.player.y - coin.y)**2)
@@ -424,14 +431,14 @@ class Game:
                         coin.collected = True
                         self.score += 10
                         self.add_particles(coin.x, coin.y, (255, 215, 0), 8)
-                        # Tocar som da moeda
+                        # Play coin sound
                         if self.sfx_on:
                             try:
                                 sounds.coin.play()
                             except Exception as e:
-                                print(f"Erro ao tocar som: {e}")
+                                print(f"Error playing sound: {e}")
 
-            # Verificar colisao com powerups
+            # Check powerup collision
             for powerup in self.powerups:
                 if not powerup.collected:
                     distance = math.sqrt((self.player.x - powerup.x)**2 + (self.player.y - powerup.y)**2)
@@ -441,7 +448,7 @@ class Game:
                         self.add_particles(powerup.x, powerup.y, (100, 150, 255), 12)
                         self.score += 20
 
-            # Verificar colisao com inimigos
+            # Check enemy collision
             for enemy in self.enemies:
                 distance = math.sqrt((self.player.x - enemy.x)**2 + (self.player.y - enemy.y)**2)
                 if distance < 30:
@@ -450,18 +457,18 @@ class Game:
                         if self.player.lives <= 0:
                             self.state = "game_over"
 
-            # Verificar colisao com projeteis
+            # Check projectile collision
             for projectile in self.projectiles:
                 if projectile.active:
                     distance = math.sqrt((self.player.x - projectile.x)**2 + (self.player.y - projectile.y)**2)
                     if distance < 20:
                         if self.player.take_damage():
                             self.add_particles(self.player.x, self.player.y, (255, 150, 50), 8)
-                            projectile.reset()  # Resetar projetil
+                            projectile.reset()  # Reset projectile
                             if self.player.lives <= 0:
                                 self.state = "game_over"
 
-            # Verificar vitoria
+            # Check victory
             if all(coin.collected for coin in self.coins):
                 self.state = "game_over"
 
@@ -487,64 +494,64 @@ class Game:
             self.draw_game_over()
 
     def draw_countdown(self):
-        """Desenha a tela de contagem regressiva"""
-        # Fundo preto instantaneo
+        """Draw countdown screen"""
+        # Instant black background
         overlay = Rect(0, 0, WIDTH, HEIGHT)
         screen.draw.filled_rect(overlay, (0, 0, 0, 255))
 
         if self.countdown_timer >= 30:
-            # Numero da contagem regressiva
+            # Countdown number
             if self.countdown_number > 0:
                 number_text = str(self.countdown_number)
-                color = (255, 255, 100)  # Amarelo
+                color = (255, 255, 100)  # Yellow
             else:
                 number_text = "GO!"
-                color = (100, 255, 100)  # Verde
+                color = (100, 255, 100)  # Green
 
-            # Sombra do texto
+            # Text shadow
             screen.draw.text(number_text, center=(WIDTH//2 + 4, HEIGHT//2 + 4),
                            fontsize=120, color=(0, 0, 0, 150))
-            # Texto principal
+            # Main text
             screen.draw.text(number_text, center=(WIDTH//2, HEIGHT//2),
                            fontsize=120, color=color)
 
     def draw_menu(self):
-        """Desenha o menu principal com design melhorado"""
-        # Fundo gradiente colorido e animado
+        """Draw main menu with improved design"""
+        # Animated colored gradient background
         for y in range(0, HEIGHT, 20):
-            # Gradiente de cores vibrantes
+            # Vibrant color gradient
             r = int(50 + 30 * math.sin(y * 0.01 + self.countdown_timer * 0.02))
             g = int(100 + 40 * math.sin(y * 0.015 + self.countdown_timer * 0.03))
             b = int(150 + 50 * math.sin(y * 0.02 + self.countdown_timer * 0.04))
             screen.draw.filled_rect(Rect(0, y, WIDTH, 20), (r, g, b))
 
-        # Desenhar imagem de fundo do menu com transparencia
+        # Draw menu background image with transparency
         menu_bg.draw()
 
-        # Titulo principal com efeitos
+        # Main title with effects
         title = "CACA AO TESOURO"
         subtitle = "Aventura Pirata"
 
-        # Sombra do titulo
+        # Title shadow
         screen.draw.text(title, center=(WIDTH//2 + 3, 82), fontsize=48, color=(0, 0, 0, 150))
-        # Titulo principal com gradiente
+        # Main title with gradient
         screen.draw.text(title, center=(WIDTH//2, 80), fontsize=48, color=(255, 255, 100))
 
-        # Subtitulo
+        # Subtitle
         screen.draw.text(subtitle, center=(WIDTH//2 + 2, 132), fontsize=28, color=(0, 0, 0, 100))
         screen.draw.text(subtitle, center=(WIDTH//2, 130), fontsize=28, color=(255, 200, 100))
 
-        # Autor com estilo
+        # Author with style
         author_text = "por Matheus Abrahao"
         screen.draw.text(author_text, center=(WIDTH//2, 170), fontsize=18, color=(200, 200, 200))
 
-        # Cores do tema pirata/tropical
-        WOOD_COLOR = (107, 66, 38)      # #6B4226 - Marrom madeira
-        GOLD_COLOR = (255, 215, 0)      # #FFD700 - Dourado
-        TURQUOISE_HOVER = (26, 188, 156) # #1ABC9C - Turquesa suave
-        DARK_WOOD = (75, 46, 28)        # #4B2E1C - Marrom escuro para bordas
+        # Pirate/tropical theme colors
+        WOOD_COLOR = (107, 66, 38)      # #6B4226 - Wood brown
+        GOLD_COLOR = (255, 215, 0)      # #FFD700 - Gold
+        TURQUOISE_HOVER = (26, 188, 156) # #1ABC9C - Soft turquoise
+        DARK_WOOD = (75, 46, 28)        # #4B2E1C - Dark brown for borders
 
-        # Botoes com tema pirata/tropical
+        # Buttons with pirate/tropical theme
         button_configs = [
             ("INICIAR AVENTURA", "start"),
             ("MUSICA: " + ("LIGADA" if self.music_on else "DESLIGADA"), "music"),
@@ -556,43 +563,43 @@ class Game:
             button = self.buttons[key]
             is_hovered = self.button_hover == key
 
-            # Cor do botao baseada no hover
+            # Button color based on hover
             current_color = TURQUOISE_HOVER if is_hovered else WOOD_COLOR
 
-            # Sombra do botao (mais escura para profundidade)
+            # Button shadow (darker for depth)
             shadow = Rect(button.x + 3, button.y + 3, button.width, button.height)
             screen.draw.filled_rect(shadow, (0, 0, 0, 100))
 
-            # Botao principal com cor de madeira
+            # Main button with wood color
             screen.draw.filled_rect(button, current_color)
 
-            # Borda em marrom escuro (2px simulada)
+            # Dark brown border (2px simulated)
             border_rect = Rect(button.x - 2, button.y - 2, button.width + 4, button.height + 4)
             screen.draw.rect(border_rect, DARK_WOOD)
 
-            # Texto dourado em negrito
+            # Bold gold text
             text_color = GOLD_COLOR
-            # Sombra do texto para melhor legibilidade
+            # Text shadow for better readability
             screen.draw.text(text, center=(button.centerx + 1, button.centery + 1),
                            fontsize=22, color=(0, 0, 0, 100))
-            # Texto principal dourado
+            # Main gold text
             screen.draw.text(text, center=button.center, fontsize=22, color=text_color)
 
-        # Instrucoes na parte inferior
+        # Instructions at bottom
         instructions = "MOUSE: Clique nos botoes - OBJETIVO: Colete 10 moedas - EVITE: Piratas e projeteis!"
         screen.draw.text(instructions, center=(WIDTH//2, HEIGHT - 30), fontsize=16, color=(255, 255, 255))
 
     def draw_game(self):
-        # Desenhar territorios dos inimigos com visual melhorado
+        # Draw enemy territories with improved visual
         for enemy in self.enemies:
-            # Territorio com gradiente simulado
+            # Territory with simulated gradient
             screen.draw.rect(enemy.territory, (180, 50, 50, 30))
             screen.draw.rect(enemy.territory, (100, 0, 0))
-            # Aviso de perigo
+            # Danger warning
             screen.draw.text("PIRATAS RIVAIS", center=(enemy.territory.centerx, enemy.territory.top - 15),
                            fontsize=20, color=(255, 50, 50))
 
-        # Desenhar elementos em ordem de profundidade
+        # Draw elements in depth order
         for coin in self.coins:
             coin.draw()
         for powerup in self.powerups:
@@ -603,12 +610,12 @@ class Game:
             projectile.draw()
         self.player.draw()
 
-        # Desenhar particulas
+        # Draw particles
         for particle in self.particles:
             alpha = int((particle['life'] / 30) * 255)
             screen.draw.filled_circle((particle['x'], particle['y']), 2, particle['color'])
 
-        # UI melhorada com fundo
+        # Improved UI with background
         ui_bg = Rect(5, 5, 200, 80)
         screen.draw.filled_rect(ui_bg, (0, 0, 0, 150))
         screen.draw.rect(ui_bg, "white")
@@ -618,45 +625,45 @@ class Game:
         coin_color = (100, 255, 100) if collected_coins == COIN_COUNT else "white"
         screen.draw.text(f"Moedas: {collected_coins}/{COIN_COUNT}", (15, 45), fontsize=24, color=coin_color)
 
-        # Mostrar vidas
+        # Show lives
         lives_text = f"Vidas: {self.player.lives}/3"
         lives_color = (255, 100, 100) if self.player.lives <= 1 else (255, 255, 255)
         screen.draw.text(lives_text, (15, 65), fontsize=20, color=lives_color)
 
-        # Mostrar powerup ativo
+        # Show active powerup
         if self.player.powerup_active:
             powerup_text = f"VELOCIDADE! ({self.player.powerup_timer // 60}s)"
             screen.draw.text(powerup_text, center=(WIDTH//2, 30), fontsize=20, color=(255, 255, 0))
 
-        # Instrucoes no canto inferior
+        # Instructions in bottom corner
         instructions = "MOUSE: Clique para mover - OBJETIVO: Colete todas as 10 moedas - EVITE: Piratas e projeteis!"
         screen.draw.text(instructions, center=(WIDTH//2, HEIGHT - 20), fontsize=16, color=(200, 200, 200))
 
     def draw_game_over(self):
-        # Fundo semitransparente
+        # Semi-transparent background
         overlay = Rect(0, 0, WIDTH, HEIGHT)
         screen.draw.filled_rect(overlay, (0, 0, 0, 150))
 
-        # Game Over com sombra e efeito
+        # Game Over with shadow and effect
         collected_coins = sum(1 for coin in self.coins if coin.collected)
         is_victory = collected_coins == COIN_COUNT
 
         if is_victory:
-            # Vitoria
+            # Victory
             screen.draw.text("TESOURO ENCONTRADO!", center=(WIDTH//2 + 3, HEIGHT//2 - 47), fontsize=50, color=(0, 0, 0, 100))
             screen.draw.text("TESOURO ENCONTRADO!", center=(WIDTH//2, HEIGHT//2 - 50), fontsize=50, color=(255, 255, 100))
             screen.draw.text("Voce encontrou todos os tesouros!", center=(WIDTH//2, HEIGHT//2 - 10), fontsize=25, color=(100, 255, 100))
         else:
-            # Derrota
+            # Defeat
             screen.draw.text("PIRATAS TE PEGARAM!", center=(WIDTH//2 + 3, HEIGHT//2 - 47), fontsize=50, color=(0, 0, 0, 100))
             screen.draw.text("PIRATAS TE PEGARAM!", center=(WIDTH//2, HEIGHT//2 - 50), fontsize=50, color=(255, 100, 100))
             screen.draw.text("Os piratas rivais te capturaram!", center=(WIDTH//2, HEIGHT//2 - 10), fontsize=22, color=(255, 150, 150))
 
-        # Score com destaque
+        # Score with highlight
         screen.draw.text(f"Tesouros Encontrados: {self.score}", center=(WIDTH//2, HEIGHT//2 + 30), fontsize=30, color=(255, 255, 255))
         screen.draw.text(f"Moedas Coletadas: {collected_coins}/{COIN_COUNT}", center=(WIDTH//2, HEIGHT//2 + 60), fontsize=24, color=(255, 215, 0))
 
-        # Botao para voltar
+        # Return button
         button_rect = Rect(WIDTH//2 - 100, HEIGHT//2 + 100, 200, 40)
         screen.draw.filled_rect(button_rect, (100, 150, 255))
         screen.draw.rect(button_rect, "white")
@@ -692,7 +699,7 @@ class Game:
             self.state = "menu"
 
     def handle_mouse_move(self, pos):
-        """Atualiza o estado de hover dos botoes"""
+        """Update button hover state"""
         if self.state == "menu":
             self.button_hover = None
             for key, button in self.buttons.items():
